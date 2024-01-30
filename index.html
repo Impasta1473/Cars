@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Title</title>
+    <style>
+        body {
+            text-align: center;
+        }
+        table {
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Your Title</h1>
+    <div id="tableContainer"></div>
+
+    <script>
+        const imageArray = /* Your JavaScript array of image sources */;
+        const imagesPerPage = 36; // 6x6 table
+        const imageIdStart = 290000000000000000000;
+        let currentPage = 0;
+        let startIndex = 0;
+
+        function generateTable(startIndex) {
+            const tableContainer = document.getElementById("tableContainer");
+            const table = document.createElement("table");
+
+            for (let i = 0; i < 6; i++) {
+                const row = table.insertRow();
+                for (let j = 0; j < 6; j++) {
+                    const currentIndex = startIndex + i * 6 + j;
+                    const cell = row.insertCell();
+                    if (currentIndex < imageArray.length) {
+                        const img = document.createElement("img");
+                        img.src = imageArray[currentIndex];
+                        cell.appendChild(img);
+                    } else {
+                        cell.textContent = currentIndex + imageIdStart;
+                    }
+                }
+            }
+
+            tableContainer.appendChild(table);
+        }
+
+        function savePage() {
+            const htmlContent = `<!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Your Title - Page ${currentPage + 1}</title>
+                <style>
+                    body {
+                        text-align: center;
+                    }
+                    table {
+                        margin: auto;
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>Your Title - Page ${currentPage + 1}</h1>
+                <div id="tableContainer"></div>
+
+                <script>
+                    const imageArray = ${JSON.stringify(imageArray)};
+                    const imagesPerPage = 36;
+                    const imageIdStart = 290000000000000000000;
+                    let currentPage = ${currentPage + 1};
+                    let startIndex = ${startIndex};
+
+                    function generateTable(startIndex) {
+                        const tableContainer = document.getElementById("tableContainer");
+                        const table = document.createElement("table");
+
+                        for (let i = 0; i < 6; i++) {
+                            const row = table.insertRow();
+                            for (let j = 0; j < 6; j++) {
+                                const currentIndex = startIndex + i * 6 + j;
+                                const cell = row.insertCell();
+                                if (currentIndex < imageArray.length) {
+                                    const img = document.createElement("img");
+                                    img.src = imageArray[currentIndex];
+                                    cell.appendChild(img);
+                                } else {
+                                    cell.textContent = currentIndex + imageIdStart;
+                                }
+                            }
+                        }
+
+                        tableContainer.appendChild(table);
+                    }
+
+                    generateTable(${startIndex});
+
+                </scr${"ipt>"}
+            </body>
+            </html>`;
+
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `page_${currentPage + 1}.html`;
+            link.click();
+        }
+
+        function nextPage() {
+            generateTable(startIndex);
+            startIndex += imagesPerPage;
+            currentPage++;
+
+            if (startIndex < imageArray.length) {
+                savePage();
+            }
+        }
+
+        // Initial load
+        nextPage();
+    </script>
+</body>
+</html>
